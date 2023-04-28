@@ -66,7 +66,7 @@ export const Meet = () => {
    }, []);
 
    return (
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '1000px' }}>
          {/* <RosterAttendee attendeeId={attendee?.attendeeId} /> */}
          <button onClick={createAtendee}>Join</button>
          <button onClick={toggleVideo}>toggle video</button>

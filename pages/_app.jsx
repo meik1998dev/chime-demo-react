@@ -12,8 +12,10 @@ export default function App({ Component, pageProps }) {
       <ThemeProvider theme={lightTheme}>
          <GlobalStyles />
          <MeetingProvider>
-            <VideoTileGrid noRemoteVideoView={<>No videos</>} />
-
+            <VideoTileGrid
+               className='videoGrid'
+               noRemoteVideoView={<>No videos</>}
+            />
             <Component {...pageProps} />
          </MeetingProvider>
       </ThemeProvider>
