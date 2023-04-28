@@ -1,5 +1,4 @@
 import '@/styles/globals.css';
-import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'styled-components';
 import {
    MeetingProvider,
@@ -8,7 +7,7 @@ import {
    VideoTileGrid,
 } from 'amazon-chime-sdk-component-library-react';
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }) {
    return (
       <ThemeProvider theme={lightTheme}>
          <GlobalStyles />

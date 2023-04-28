@@ -72,7 +72,9 @@ export const Meet = () => {
          <button onClick={toggleVideo}>toggle video</button>
          <button onClick={createMeetingSession}>create meeting</button>
          <ContentShare />
-         <button onClick={toggleContentShare}>Toggle content share</button>
+         <button onClick={() => toggleContentShare()}>
+            Toggle content share
+         </button>
          <div>
             Meetings list
             {meetings.map((meet: any) => (
