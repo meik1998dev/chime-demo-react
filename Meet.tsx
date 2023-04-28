@@ -8,9 +8,20 @@ import {
    RosterAttendee,
    useContentShareControls,
    ContentShare,
+   ControlBar,
+   Laptop,
+   ControlBarButton,
+   Camera,
+   Dialer,
+   Microphone,
+   Phone,
+   Sound,
+   useAudioOutputs,
 } from 'amazon-chime-sdk-component-library-react';
 import { MeetingSessionConfiguration } from 'amazon-chime-sdk-js';
 import { useEffect, useState } from 'react';
+import { useToggleLocalMute } from 'amazon-chime-sdk-component-library-react';
+import { AudioOutputControl } from 'amazon-chime-sdk-component-library-react';
 
 export const Meet = () => {
    const meetingManager = useMeetingManager();
@@ -19,16 +30,13 @@ export const Meet = () => {
    const { toggleVideo } = useLocalVideo();
    const [meetings, setmeetings] = useState<any>([]);
    const { toggleContentShare } = useContentShareControls();
+   const { muted, toggleMute } = useToggleLocalMute();
 
    const joinMeeting = async () => {
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
          meetingId,
          attendee,
       );
-
-      // const options = {
-      //    deviceLabels: DeviceLabels.AudioAndVideo,
-      // };
 
       await meetingManager.join(meetingSessionConfiguration);
 
@@ -65,20 +73,84 @@ export const Meet = () => {
       fetchMeetings();
    }, []);
 
+   useEffect(() => {
+      if (!meetingId) return;
+
+      createAtendee();
+   }, [meetingId?.uuid]);
+
+   const [cameraActive, setCameraActive] = useState(false);
+
+   const microphoneButtonProps = {
+      icon: muted ? <Microphone muted /> : <Microphone />,
+      onClick: () => toggleMute(),
+      label: 'Mute',
+   };
+
+   const cameraButtonProps = {
+      icon: cameraActive ? <Camera /> : <Camera disabled />,
+
+      onClick: () => {
+         setCameraActive(!cameraActive);
+         toggleVideo();
+      },
+      label: 'Camera',
+   };
+
+   const hangUpButtonProps = {
+      icon: <Phone />,
+      onClick: () => meetingManager.leave(),
+      label: 'End',
+   };
+
+   const laptopButtonProps = {
+      icon: <Laptop />,
+      onClick: () => toggleContentShare(),
+      label: 'Screen',
+   };
+
    return (
-      <div style={{ minHeight: '1000px' }}>
+      <div
+         style={{
+            minHeight: '100vh',
+            display: 'flex ',
+            alignItems: 'center',
+            flexDirection: 'column',
+         }}
+      >
          {/* <RosterAttendee attendeeId={attendee?.attendeeId} /> */}
-         <button onClick={createAtendee}>Join</button>
+         {/* <button onClick={createAtendee}>Join</button>
          <button onClick={toggleVideo}>toggle video</button>
-         <button onClick={createMeetingSession}>create meeting</button>
-         <ContentShare />
-         <button onClick={() => toggleContentShare()}>
-            Toggle content share
-         </button>
-         <div>
-            Meetings list
+       */}
+         <ControlBar
+            className='ControlBar'
+            showLabels
+            layout='undocked-horizontal'
+         >
+            <ControlBarButton {...microphoneButtonProps} />
+            <AudioOutputControl />
+            <ControlBarButton {...cameraButtonProps} />
+            <ControlBarButton {...laptopButtonProps} />
+            <ControlBarButton {...hangUpButtonProps} />
+         </ControlBar>
+         <div
+            style={{
+               display: 'flex',
+               flexDirection: 'column',
+               marginTop: '50px',
+            }}
+         >
+            <button onClick={createMeetingSession}>create meeting</button>
+
             {meetings.map((meet: any) => (
-               <div onClick={() => setMeetingId(meet)}>{meet.uuid}</div>
+               <button
+                  style={{
+                     color: meetingId?.uuid === meet.uuid ? 'green' : 'black',
+                  }}
+                  onClick={() => setMeetingId(meet)}
+               >
+                  join to {meet.uuid}
+               </button>
             ))}
          </div>
       </div>

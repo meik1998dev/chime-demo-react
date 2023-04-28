@@ -1,3 +1,7 @@
 .videoGrid{
-   min-height: 50vh;
+   min-height: 90vh;
+}
+
+.ControlBar{
+   width: fit-content !important;
 }
