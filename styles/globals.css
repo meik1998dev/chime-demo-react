@@ -1,7 +1,60 @@
-.videoGrid{
+.videoGrid {
    min-height: 90vh;
+   background-color: #171923 !important;
 }
 
-.ControlBar{
+.ControlBar {
+   background-color: #171923 !important;
    width: fit-content !important;
+}
+
+.ch-control-bar-item-label {
+   color: #171923 !important;
+   padding: 0 !important;
+}
+
+.ch-control-bar-item-iconButton {
+   padding: 0 !important;
+}
+
+.ch-icon {
+   color: #171923 !important;
+}
+
+.ControlBar > div {
+   background-color: #E2E8F0 !important;
+   border-radius: 10px;
+   display: flex;
+   flex-direction: column;
+   width: 50px;
+   height: 50px;
+   align-items: center;
+   justify-content: center;
+}
+
+.ch-control-bar-item-iconButton:hover {
+   background: none !important;
+   scale: 105%;
+   border-radius: 100%;
+}
+
+.ch-control-bar-item-iconButton:focus {
+   outline: none !important;
+   border: none !important;
+   box-shadow: none !important;
+}
+
+#endCall {
+   background-color: #c53030 !important;
+   color: #E2E8F0 !important;
+}
+
+#endCall .ch-icon {
+   background-color: #c53030 !important;
+   color: #E2E8F0 !important;
+}
+
+#endCall .ch-control-bar-item-label {
+   background-color: #c53030 !important;
+   color: #E2E8F0 !important;
 }

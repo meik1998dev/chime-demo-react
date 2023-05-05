@@ -6,16 +6,14 @@ import {
    GlobalStyles,
    VideoTileGrid,
 } from 'amazon-chime-sdk-component-library-react';
+import { MeetingAttendees } from '../MeetingAttendees';
 
 export default function App({ Component, pageProps }) {
    return (
       <ThemeProvider theme={lightTheme}>
          <GlobalStyles />
          <MeetingProvider>
-            <VideoTileGrid
-               className='videoGrid'
-               noRemoteVideoView={<>No videos</>}
-            />
+            <MeetingAttendees />
             <Component {...pageProps} />
          </MeetingProvider>
       </ThemeProvider>

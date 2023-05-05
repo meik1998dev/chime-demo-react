@@ -17,6 +17,7 @@ import {
    Phone,
    Sound,
    useAudioOutputs,
+   WithTooltip,
 } from 'amazon-chime-sdk-component-library-react';
 import { MeetingSessionConfiguration } from 'amazon-chime-sdk-js';
 import { useEffect, useState } from 'react';
@@ -112,6 +113,7 @@ export const Meet = () => {
    return (
       <div
          style={{
+            background: '#171923',
             minHeight: '100vh',
             display: 'flex ',
             alignItems: 'center',
@@ -124,14 +126,14 @@ export const Meet = () => {
        */}
          <ControlBar
             className='ControlBar'
-            showLabels
+            // showLabels
             layout='undocked-horizontal'
          >
             <ControlBarButton {...microphoneButtonProps} />
-            <AudioOutputControl />
+            <AudioOutputControl className='AudioOutputControl' />
             <ControlBarButton {...cameraButtonProps} />
             <ControlBarButton {...laptopButtonProps} />
-            <ControlBarButton {...hangUpButtonProps} />
+            <ControlBarButton id='endCall' {...hangUpButtonProps} />
          </ControlBar>
          <div
             style={{
