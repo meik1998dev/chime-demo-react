@@ -22,7 +22,7 @@
 }
 
 .ControlBar > div {
-   background-color: #E2E8F0 !important;
+   background-color: #e2e8f0 !important;
    border-radius: 10px;
    display: flex;
    flex-direction: column;
@@ -46,15 +46,23 @@
 
 #endCall {
    background-color: #c53030 !important;
-   color: #E2E8F0 !important;
+   color: #e2e8f0 !important;
 }
 
 #endCall .ch-icon {
    background-color: #c53030 !important;
-   color: #E2E8F0 !important;
+   color: #e2e8f0 !important;
 }
 
 #endCall .ch-control-bar-item-label {
    background-color: #c53030 !important;
-   color: #E2E8F0 !important;
+   color: #e2e8f0 !important;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ch-remote-video--undefined {
+   display: none !important;
 }

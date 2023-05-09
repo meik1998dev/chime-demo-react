@@ -6,16 +6,18 @@ import {
    GlobalStyles,
    VideoTileGrid,
 } from 'amazon-chime-sdk-component-library-react';
-import { MeetingAttendees } from '../MeetingAttendees';
+import { MeetingAttendees } from '../components/MeetingAttendees';
+import { ChakraProvider } from '@chakra-ui/react';
 
 export default function App({ Component, pageProps }) {
    return (
       <ThemeProvider theme={lightTheme}>
          <GlobalStyles />
-         <MeetingProvider>
-            <MeetingAttendees />
-            <Component {...pageProps} />
-         </MeetingProvider>
+         <ChakraProvider>
+            <MeetingProvider>
+               <Component {...pageProps} />
+            </MeetingProvider>
+         </ChakraProvider>
       </ThemeProvider>
    );
 }

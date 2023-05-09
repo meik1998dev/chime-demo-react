@@ -1,3 +1,4 @@
+import { Avatar } from '@chakra-ui/react';
 import {
    RemoteVideo,
    useAttendeeStatus,
@@ -5,7 +6,7 @@ import {
 } from 'amazon-chime-sdk-component-library-react';
 import React from 'react';
 
-export const Attendee = ({ chimeAttendeeId }) => {
+export const Attendee = ({ chimeAttendeeId, externalUserId }) => {
    const { attendeeIdToTileId } = useRemoteVideoTileState();
 
    const matched = Object.keys(attendeeIdToTileId).find(
@@ -28,16 +29,11 @@ export const Attendee = ({ chimeAttendeeId }) => {
       );
    } else
       return (
-         <div
-            style={{
-               border: '1px solid grey',
-               gridArea: '',
-               background: 'blue',
-            }}
-         >
+         <div className='bg-slate-700 text-white font-bold flex justify-center items-center'>
             {muted ? 'muted' : 'not muted'}
             <br />
-            {chimeAttendeeId}
+            {externalUserId}
+            <Avatar name={externalUserId} />
          </div>
       );
 };
