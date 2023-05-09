@@ -12,10 +12,12 @@ export const MeetingAttendees = ({ meetId }) => {
    const { roster } = useRosterState();
    const contentShare = useContentShareState();
 
-   console.log(roster, 'roster');
    return (
-      <div className='bg-transparent' style={{ padding: '1rem', height: '70vh', boxSizing: 'border-box' }}>
-         <VideoGrid style={{background : 'transparent'}}>
+      <div
+         className='bg-transparent container mx-auto'
+         style={{ padding: '1rem', height: '70vh', boxSizing: 'border-box' }}
+      >
+         <VideoGrid style={{ background: 'transparent' }}>
             <LocalVideo />
             {contentShare.tileId && (
                <ContentShare

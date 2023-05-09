@@ -5,6 +5,7 @@ import {
    useRemoteVideoTileState,
 } from 'amazon-chime-sdk-component-library-react';
 import React from 'react';
+import { BsFillMicMuteFill } from 'react-icons/bs';
 
 export const Attendee = ({ chimeAttendeeId, externalUserId }) => {
    const { attendeeIdToTileId } = useRemoteVideoTileState();
@@ -21,6 +22,7 @@ export const Attendee = ({ chimeAttendeeId, externalUserId }) => {
       return (
          <RemoteVideo
             style={{
+               borderRadius: '8px',
                border: '1px solid grey',
                gridArea: '',
             }}
@@ -40,7 +42,7 @@ export const Attendee = ({ chimeAttendeeId, externalUserId }) => {
                <span className='bg-[#2D3748] rounded-lg text-xs flex justify-center items-center px-2'>
                   {externalUserId.split('|')[0]}
                </span>
-               <span>{muted ? 'muted' : 'not muted'}</span>
+               <span>{muted ? <BsFillMicMuteFill className='text-red-600' /> : ''}</span>
             </div>
          </div>
       );

@@ -8,6 +8,7 @@ import {
    Camera,
    Microphone,
    Phone,
+   useFeaturedTileState,
 } from 'amazon-chime-sdk-component-library-react';
 import { MeetingSessionConfiguration } from 'amazon-chime-sdk-js';
 import { useEffect, useRef, useState } from 'react';
@@ -26,6 +27,7 @@ export const Meet = () => {
    const { muted, toggleMute } = useToggleLocalMute();
    const { toggleAudio } = useLocalAudioOutput();
    const [isFullScreen, setisFullScreen] = useState(false);
+   const { tileId } = useFeaturedTileState();
 
    const joinMeeting = async () => {
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
