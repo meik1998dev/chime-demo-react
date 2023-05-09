@@ -14,7 +14,7 @@ import { MeetingSessionConfiguration } from 'amazon-chime-sdk-js';
 import { useEffect, useRef, useState } from 'react';
 import { useToggleLocalMute } from 'amazon-chime-sdk-component-library-react';
 import { MeetingAttendees } from './MeetingAttendees';
-import { Tooltip } from '@chakra-ui/react';
+import { Spinner, Tooltip } from '@chakra-ui/react';
 import { useLocalAudioOutput } from 'amazon-chime-sdk-component-library-react';
 
 export const Meet = () => {
@@ -28,6 +28,7 @@ export const Meet = () => {
    const { toggleAudio } = useLocalAudioOutput();
    const [isFullScreen, setisFullScreen] = useState(false);
    const { tileId } = useFeaturedTileState();
+   const [isLoading, setIsLoading] = useState(false);
 
    const joinMeeting = async () => {
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
@@ -41,9 +42,12 @@ export const Meet = () => {
    };
 
    const createMeetingSession = async () => {
+      setIsLoading(true);
       await fetch('https://chime.axensodev.com/api/meetings/create', {
          method: 'POST',
       });
+
+      fetchMeetings();
    };
 
    const createAtendee = async () => {
@@ -61,12 +65,14 @@ export const Meet = () => {
       joinMeeting();
    }, [attendee?.AttendeeId]);
 
+   const fetchMeetings = async () => {
+      const res = await fetch(`https://chime.axensodev.com/api/meetings`);
+      const data = await res.json();
+      setmeetings(data.data.meetings);
+      setIsLoading(false);
+   };
+
    useEffect(() => {
-      const fetchMeetings = async () => {
-         const res = await fetch(`https://chime.axensodev.com/api/meetings`);
-         const data = await res.json();
-         setmeetings(data.data.meetings);
-      };
       fetchMeetings();
    }, []);
 
@@ -371,20 +377,29 @@ export const Meet = () => {
                display: 'flex',
                flexDirection: 'column',
                marginTop: '50px',
+               justifyContent: 'center',
+               alignItems: 'center',
             }}
          >
-            <button onClick={createMeetingSession}>create meeting</button>
+            {isLoading ? (
+               <Spinner />
+            ) : (
+               <>
+                  <button onClick={createMeetingSession}>create meeting</button>
 
-            {meetings.map((meet: any) => (
-               <button
-                  style={{
-                     color: meetingId?.uuid === meet.uuid ? 'green' : 'black',
-                  }}
-                  onClick={() => setMeetingId(meet)}
-               >
-                  join to {meet.uuid}
-               </button>
-            ))}
+                  {meetings.map((meet: any) => (
+                     <button
+                        style={{
+                           color:
+                              meetingId?.uuid === meet.uuid ? 'green' : 'black',
+                        }}
+                        onClick={() => setMeetingId(meet)}
+                     >
+                        join to {meet.uuid}
+                     </button>
+                  ))}
+               </>
+            )}
          </div>
       </>
    );
