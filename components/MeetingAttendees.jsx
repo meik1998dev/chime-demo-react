@@ -15,9 +15,9 @@ export const MeetingAttendees = ({ meetId }) => {
    return (
       <div
          className='bg-transparent container mx-auto'
-         style={{ padding: '1rem', height: '70vh', boxSizing: 'border-box' }}
+         style={{ padding: '1rem', height: '80vh', boxSizing: 'border-box' }}
       >
-         <VideoGrid style={{ background: 'transparent' }}>
+         <VideoGrid style={{ background: 'transparent' , gap : '15px' }}>
             <LocalVideo />
             {contentShare.tileId && (
                <ContentShare
