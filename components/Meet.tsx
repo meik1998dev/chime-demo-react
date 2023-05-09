@@ -12,8 +12,9 @@ import {
 import { MeetingSessionConfiguration } from 'amazon-chime-sdk-js';
 import { useEffect, useRef, useState } from 'react';
 import { useToggleLocalMute } from 'amazon-chime-sdk-component-library-react';
-import { AudioOutputControl } from 'amazon-chime-sdk-component-library-react';
 import { MeetingAttendees } from './MeetingAttendees';
+import { Tooltip } from '@chakra-ui/react';
+import { useLocalAudioOutput } from 'amazon-chime-sdk-component-library-react';
 
 export const Meet = () => {
    const meetingManager = useMeetingManager();
@@ -23,6 +24,8 @@ export const Meet = () => {
    const [meetings, setmeetings] = useState<any>([]);
    const { toggleContentShare } = useContentShareControls();
    const { muted, toggleMute } = useToggleLocalMute();
+   const { toggleAudio } = useLocalAudioOutput();
+   const [isFullScreen, setisFullScreen] = useState(false);
 
    const joinMeeting = async () => {
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
@@ -73,35 +76,20 @@ export const Meet = () => {
 
    const [cameraActive, setCameraActive] = useState(false);
 
-   const microphoneButtonProps = {
-      icon: muted ? <Microphone muted /> : <Microphone />,
-      onClick: () => toggleMute(),
-      label: 'Mute',
-   };
-
-   const cameraButtonProps = {
-      icon: cameraActive ? <Camera /> : <Camera disabled />,
-
-      onClick: () => {
-         setCameraActive(!cameraActive);
-         toggleVideo();
-      },
-      label: 'Camera',
-   };
-
-   const hangUpButtonProps = {
-      icon: <Phone />,
-      onClick: () => meetingManager.leave(),
-      label: 'End',
-   };
-
-   const laptopButtonProps = {
-      icon: <Laptop />,
-      onClick: () => toggleContentShare(),
-      label: 'Screen',
-   };
-
    const elem = useRef(null);
+
+   function closeFullscreen() {
+      if ((document as any).exitFullscreen) {
+         (document as any).exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+         /* Safari */
+         (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+         /* IE11 */
+         (document as any).msExitFullscreen();
+      }
+      setisFullScreen(false);
+   }
 
    function openFullscreen() {
       if ((elem.current as any)?.requestFullscreen) {
@@ -113,64 +101,265 @@ export const Meet = () => {
          /* IE11 */
          (elem.current as any)?.msRequestFullscreen();
       }
+      setisFullScreen(true);
    }
 
    return (
       <>
-         <div ref={elem}>
+         <div
+            ref={elem}
+            className='bg-[#171923] h-screen flex flex-col justify-between'
+         >
             <MeetingAttendees meetId={meetingId?.uuid} />
 
-            <div
-               style={{
-                  background: '#171923',
-                  minHeight: '100vh',
-                  display: 'flex ',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-               }}
-            >
-               {/* <RosterAttendee attendeeId={attendee?.attendeeId} /> */}
-               {/* <button onClick={createAtendee}>Join</button>
-         <button onClick={toggleVideo}>toggle video</button>
-       */}
+            <div className='flex flex-col items-center'>
                <ControlBar
-                  className='ControlBar'
+                  className='ControlBar flex gap-3 w-full'
                   showLabels={false}
                   layout='undocked-horizontal'
                >
-                  <ControlBarButton {...microphoneButtonProps} />
-                  <AudioOutputControl className='AudioOutputControl' />
-                  <ControlBarButton {...cameraButtonProps} />
-                  <ControlBarButton {...laptopButtonProps} />
-                  <ControlBarButton id='endCall' {...hangUpButtonProps} />
-                  <span
-                     style={{ width: '50px', cursor: 'pointer' }}
-                     onClick={openFullscreen}
-                  >
-                     <svg
-                        viewBox='-1.5 -1.5 18.00 18.00'
-                        fill='none'
-                        xmlns='http://www.w3.org/2000/svg'
+                  <Tooltip label='End call'>
+                     <button
+                        onClick={() => meetingManager.leave()}
+                        className='w-12 h-12 hover:bg-opacity-70 transition-all duration-500 flex justify-center items-center rounded-lg text-white bg-[#c53030]'
                      >
-                        <g id='SVGRepo_bgCarrier' stroke-width='0'></g>
-                        <g
-                           id='SVGRepo_tracerCarrier'
-                           stroke-linecap='round'
-                           stroke-linejoin='round'
-                           stroke='#CCCCCC'
-                           stroke-width='0.12'
-                        ></g>
-                        <g id='SVGRepo_iconCarrier'>
-                           {' '}
+                        <svg
+                           width='14'
+                           height='14'
+                           viewBox='0 0 14 14'
+                           fill='none'
+                           xmlns='http://www.w3.org/2000/svg'
+                        >
                            <path
-                              fill-rule='evenodd'
-                              clip-rule='evenodd'
-                              d='M2 2.5C2 2.22386 2.22386 2 2.5 2H5.5C5.77614 2 6 2.22386 6 2.5C6 2.77614 5.77614 3 5.5 3H3V5.5C3 5.77614 2.77614 6 2.5 6C2.22386 6 2 5.77614 2 5.5V2.5ZM9 2.5C9 2.22386 9.22386 2 9.5 2H12.5C12.7761 2 13 2.22386 13 2.5V5.5C13 5.77614 12.7761 6 12.5 6C12.2239 6 12 5.77614 12 5.5V3H9.5C9.22386 3 9 2.77614 9 2.5ZM2.5 9C2.77614 9 3 9.22386 3 9.5V12H5.5C5.77614 12 6 12.2239 6 12.5C6 12.7761 5.77614 13 5.5 13H2.5C2.22386 13 2 12.7761 2 12.5V9.5C2 9.22386 2.22386 9 2.5 9ZM12.5 9C12.7761 9 13 9.22386 13 9.5V12.5C13 12.7761 12.7761 13 12.5 13H9.5C9.22386 13 9 12.7761 9 12.5C9 12.2239 9.22386 12 9.5 12H12V9.5C12 9.22386 12.2239 9 12.5 9Z'
-                              fill='#E2E8F0'
-                           ></path>{' '}
-                        </g>
-                     </svg>
-                  </span>
+                              d='M9.94301 4.11934L11.2763 2.78601M11.2763 2.78601L12.6097 1.45268M11.2763 2.78601L9.94301 1.45268M11.2763 2.78601L12.6097 4.11934M2.6097 0.786011C1.87332 0.786011 1.27637 1.38296 1.27637 2.11934V2.78601C1.27637 8.30886 5.75352 12.786 11.2764 12.786H11.943C12.6794 12.786 13.2764 12.1891 13.2764 11.4527V9.26652C13.2764 8.97956 13.0927 8.7248 12.8205 8.63406L9.82489 7.63552C9.51015 7.53061 9.16616 7.67309 9.01779 7.96983L8.26537 9.47467C6.63555 8.73984 5.32253 7.42682 4.5877 5.79701L6.09255 5.04459C6.38929 4.89622 6.53177 4.55223 6.42686 4.23749L5.42832 1.24186C5.33757 0.969631 5.08281 0.786011 4.79586 0.786011H2.6097Z'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                              stroke-linejoin='round'
+                           />
+                        </svg>
+                     </button>
+                  </Tooltip>
+
+                  <Tooltip label='toggle video'>
+                     <button
+                        onClick={() => {
+                           setCameraActive(!cameraActive);
+                           toggleVideo();
+                        }}
+                        className='w-12 h-12 hover:bg-opacity-70 transition-all duration-500 flex justify-center items-center rounded-lg text-[#171923] bg-[#e2e8f0]'
+                     >
+                        {cameraActive ? (
+                           <svg
+                              width='14'
+                              height='10'
+                              viewBox='0 0 14 10'
+                              fill='none'
+                              xmlns='http://www.w3.org/2000/svg'
+                           >
+                              <path
+                                 d='M9.27637 3.45268L12.3116 1.93508C12.7548 1.71345 13.2764 2.03578 13.2764 2.53137V7.04065C13.2764 7.53624 12.7548 7.85857 12.3116 7.63694L9.27637 6.11934M2.6097 8.78601H7.94303C8.67941 8.78601 9.27637 8.18906 9.27637 7.45268V2.11934C9.27637 1.38296 8.67941 0.786011 7.94303 0.786011H2.6097C1.87332 0.786011 1.27637 1.38296 1.27637 2.11934V7.45268C1.27637 8.18906 1.87332 8.78601 2.6097 8.78601Z'
+                                 stroke='#718096'
+                                 stroke-width='1.2'
+                                 stroke-linecap='round'
+                                 stroke-linejoin='round'
+                              />
+                           </svg>
+                        ) : (
+                           <svg
+                              width='14'
+                              height='10'
+                              viewBox='0 0 14 10'
+                              fill='none'
+                              xmlns='http://www.w3.org/2000/svg'
+                           >
+                              <path
+                                 d='M9.27637 3.45268L12.3116 1.93508C12.7548 1.71345 13.2764 2.03578 13.2764 2.53137V7.04065C13.2764 7.53624 12.7548 7.85857 12.3116 7.63694L9.27637 6.11934M2.6097 8.78601H7.94303C8.67941 8.78601 9.27637 8.18906 9.27637 7.45268V2.11934C9.27637 1.38296 8.67941 0.786011 7.94303 0.786011H2.6097C1.87332 0.786011 1.27637 1.38296 1.27637 2.11934V7.45268C1.27637 8.18906 1.87332 8.78601 2.6097 8.78601Z'
+                                 stroke='#718096'
+                                 stroke-width='1.2'
+                                 stroke-linecap='round'
+                                 stroke-linejoin='round'
+                              />
+                           </svg>
+                        )}
+                     </button>
+                  </Tooltip>
+
+                  <Tooltip label='toggle mic'>
+                     <button
+                        onClick={() => {
+                           toggleMute();
+                        }}
+                        className='w-12 h-12 hover:bg-opacity-70 transition-all duration-500 flex justify-center items-center rounded-lg text-[#171923] bg-[#e2e8f0]'
+                     >
+                        {muted ? (
+                           <svg
+                              width='17'
+                              height='17'
+                              viewBox='0 0 17 17'
+                              fill='none'
+                              xmlns='http://www.w3.org/2000/svg'
+                           >
+                              <g clip-path='url(#clip0_1729_19523)'>
+                                 <path
+                                    d='M12.9427 8.11934C12.9427 10.6967 10.8534 12.786 8.27604 12.786M8.27604 12.786C5.69871 12.786 3.60938 10.6967 3.60938 8.11934M8.27604 12.786V15.4527M8.27604 15.4527H5.60938M8.27604 15.4527H10.9427M8.27604 10.1193C7.17147 10.1193 6.27604 9.22391 6.27604 8.11934V4.11934C6.27604 3.01477 7.17147 2.11934 8.27604 2.11934C9.38061 2.11934 10.276 3.01477 10.276 4.11934V8.11934C10.276 9.22391 9.38061 10.1193 8.27604 10.1193Z'
+                                    stroke='#718096'
+                                    stroke-width='1.2'
+                                    stroke-linecap='round'
+                                    stroke-linejoin='round'
+                                 />
+                              </g>
+                              <defs>
+                                 <clipPath id='clip0_1729_19523'>
+                                    <rect
+                                       width='16'
+                                       height='16'
+                                       fill='white'
+                                       transform='translate(0.276367 0.786011)'
+                                    />
+                                 </clipPath>
+                              </defs>
+                           </svg>
+                        ) : (
+                           <svg
+                              width='17'
+                              height='17'
+                              viewBox='0 0 17 17'
+                              fill='none'
+                              xmlns='http://www.w3.org/2000/svg'
+                           >
+                              <g clip-path='url(#clip0_1729_19523)'>
+                                 <path
+                                    d='M12.9427 8.11934C12.9427 10.6967 10.8534 12.786 8.27604 12.786M8.27604 12.786C5.69871 12.786 3.60938 10.6967 3.60938 8.11934M8.27604 12.786V15.4527M8.27604 15.4527H5.60938M8.27604 15.4527H10.9427M8.27604 10.1193C7.17147 10.1193 6.27604 9.22391 6.27604 8.11934V4.11934C6.27604 3.01477 7.17147 2.11934 8.27604 2.11934C9.38061 2.11934 10.276 3.01477 10.276 4.11934V8.11934C10.276 9.22391 9.38061 10.1193 8.27604 10.1193Z'
+                                    stroke='#718096'
+                                    stroke-width='1.2'
+                                    stroke-linecap='round'
+                                    stroke-linejoin='round'
+                                 />
+                              </g>
+                              <defs>
+                                 <clipPath id='clip0_1729_19523'>
+                                    <rect
+                                       width='16'
+                                       height='16'
+                                       fill='white'
+                                       transform='translate(0.276367 0.786011)'
+                                    />
+                                 </clipPath>
+                              </defs>
+                           </svg>
+                        )}{' '}
+                     </button>
+                  </Tooltip>
+
+                  <Tooltip label='toggle mic'>
+                     <button
+                        onClick={() => {
+                           toggleContentShare();
+                        }}
+                        className='w-12 h-12 flex-1 hover:bg-opacity-70 transition-all duration-500 flex justify-center items-center rounded-lg text-[#171923] bg-[#e2e8f0]'
+                     >
+                        <svg
+                           width='13'
+                           height='13'
+                           viewBox='0 0 13 13'
+                           fill='none'
+                           xmlns='http://www.w3.org/2000/svg'
+                        >
+                           <path
+                              d='M11.6094 4.11935L11.6094 3.45268C11.6094 2.34811 10.7139 1.45268 9.60937 1.45268L2.94271 1.45268C1.83814 1.45268 0.942708 2.34811 0.942708 3.45268L0.942708 4.11935M3.60937 6.78602L6.27604 4.11935M6.27604 4.11935L8.94271 6.78602M6.27604 4.11935L6.27604 12.1193'
+                              stroke='#718096'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                              stroke-linejoin='round'
+                           />
+                        </svg>
+                     </button>
+                  </Tooltip>
+
+                  {/* <AudioOutputControl className='AudioOutputControl ' /> */}
+                  {/* <Tooltip label='toggle audio'>
+                     <button
+                        className='w-12 h-12 hover:bg-opacity-70 transition-all duration-500 rounded-lg flex justify-center items-center bg-[#4A5568]'
+                        onClick={openFullscreen}
+                     >
+                        <svg
+                           width='14'
+                           height='14'
+                           viewBox='0 0 14 14'
+                           fill='none'
+                           xmlns='http://www.w3.org/2000/svg'
+                        >
+                           <path
+                              d='M8.49612 0.786011H12.4961V4.78601'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                           <path
+                              d='M4.99998 12.814L1 12.814L1 8.81403'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                           <path
+                              d='M12.4961 8.77639L12.4961 12.7764L8.49609 12.7764'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                           <path
+                              d='M1 5.01664L1 1.01666L5 1.01666'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                        </svg>
+                     </button>
+                  </Tooltip> */}
+                  <Tooltip label='full screen'>
+                     <button
+                        className='w-12 h-12 hover:bg-opacity-70 transition-all duration-500 rounded-lg flex justify-center items-center bg-[#4A5568]'
+                        onClick={
+                           isFullScreen
+                              ? () => closeFullscreen()
+                              : () => openFullscreen()
+                        }
+                     >
+                        <svg
+                           width='14'
+                           height='14'
+                           viewBox='0 0 14 14'
+                           fill='none'
+                           xmlns='http://www.w3.org/2000/svg'
+                        >
+                           <path
+                              d='M8.49612 0.786011H12.4961V4.78601'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                           <path
+                              d='M4.99998 12.814L1 12.814L1 8.81403'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                           <path
+                              d='M12.4961 8.77639L12.4961 12.7764L8.49609 12.7764'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                           <path
+                              d='M1 5.01664L1 1.01666L5 1.01666'
+                              stroke='white'
+                              stroke-width='1.2'
+                              stroke-linecap='round'
+                           />
+                        </svg>
+                     </button>
+                  </Tooltip>
                </ControlBar>
             </div>
          </div>

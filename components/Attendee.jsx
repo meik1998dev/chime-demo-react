@@ -29,11 +29,19 @@ export const Attendee = ({ chimeAttendeeId, externalUserId }) => {
       );
    } else
       return (
-         <div className='bg-slate-700 text-white font-bold flex justify-center items-center'>
-            {muted ? 'muted' : 'not muted'}
-            <br />
-            {externalUserId}
-            <Avatar name={externalUserId} />
+         <div className='bg-[#4A5568] p-5 rounded-lg flex flex-col relative text-white  justify-center items-center'>
+            <Avatar
+               size={'lg'}
+               name={externalUserId}
+               background='#2D3748'
+               color={'white'}
+            />
+            <div className='flex w-full justify-between absolute bottom-2 px-2'>
+               <span className='bg-[#2D3748] rounded-lg text-xs flex justify-center items-center px-2'>
+                  {externalUserId.split('|')[0]}
+               </span>
+               <span>{muted ? 'muted' : 'not muted'}</span>
+            </div>
          </div>
       );
 };
