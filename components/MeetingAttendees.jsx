@@ -9,16 +9,18 @@ import { useEffect } from 'react';
 import { Attendee } from './Attendee';
 
 export const MeetingAttendees = ({ meetId }) => {
-   const { roster } = useRosterState();
    const contentShare = useContentShareState();
+   const { roster } = useRosterState();
 
    return (
       <div
-         className='bg-transparent container mx-auto'
-         style={{ padding: '1rem', height: '80vh', boxSizing: 'border-box' }}
+         className='bg-transparent '
+         style={{ padding: '1rem', height: '85vh', boxSizing: 'border-box' }}
       >
-         <VideoGrid style={{ background: 'transparent' , gap : '15px' }}>
-            <LocalVideo />
+         <div
+            className='grid lg:grid-cols-6 grid-cols-1 lg:grid-rows-6 h-full'
+            style={{ background: 'transparent', gap: '15px' }}
+         >
             {contentShare.tileId && (
                <ContentShare
                   style={{
@@ -39,7 +41,7 @@ export const MeetingAttendees = ({ meetId }) => {
                   );
                },
             )}
-         </VideoGrid>
+         </div>
       </div>
    );
 };

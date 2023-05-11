@@ -29,6 +29,7 @@ export const Meet = () => {
    const [isFullScreen, setisFullScreen] = useState(false);
    const { tileId } = useFeaturedTileState();
    const [isLoading, setIsLoading] = useState(false);
+   const [isCreator, setIsCreator] = useState(false);
 
    const joinMeeting = async () => {
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
@@ -39,20 +40,31 @@ export const Meet = () => {
       await meetingManager.join(meetingSessionConfiguration);
 
       await meetingManager.start();
+
+      setIsLoading(false);
    };
 
    const createMeetingSession = async () => {
       setIsLoading(true);
-      await fetch('https://chime.axensodev.com/api/meetings/create', {
-         method: 'POST',
-      });
+      setIsCreator(true);
+      const res = await fetch(
+         'https://chime.axensodev.com/api/meetings/create',
+         {
+            method: 'POST',
+         },
+      );
 
-      fetchMeetings();
+      const data = await res.json();
+      const updatedObject = { ...data.data.meeting };
+      updatedObject.uuid = updatedObject.MeetingId;
+      setMeetingId(updatedObject);
    };
 
    const createAtendee = async () => {
       const res = await fetch(
-         `https://chime.axensodev.com/api/meetings/${meetingId?.uuid}/attendee/create`,
+         `https://chime.axensodev.com/api/meetings/${
+            meetingId?.uuid
+         }/attendee/create${isCreator ? '?creator=1' : ''}`,
          { method: 'POST' },
       );
       const data = await res.json();
