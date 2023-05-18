@@ -8,7 +8,12 @@ import {
 import React from 'react';
 import { BsFillMicMuteFill } from 'react-icons/bs';
 
-export const Attendee = ({ chimeAttendeeId, externalUserId }: any) => {
+export const Attendee = ({
+   chimeAttendeeId,
+   externalUserId,
+   selectedView,
+   setselectedView,
+}: any) => {
    const { attendeeIdToTileId } = useRemoteVideoTileState();
 
    const isCreator = (externalUserId as string).startsWith('@');
@@ -22,24 +27,48 @@ export const Attendee = ({ chimeAttendeeId, externalUserId }: any) => {
    const tileId = attendeeIdToTileId[matched as string];
 
    const getBoxStyle = () => {
-      if (isCreator) {
+      console.log(isCreator, selectedView);
+
+      if ((isCreator && !selectedView) || selectedView === chimeAttendeeId) {
          return 'lg:col-span-4 row-span-6 order-1';
       } else return 'lg:col-span-1 row-span-1 order-2';
    };
 
    return (
-      <div className={`${getBoxStyle()}`}>
+      <div
+         onClick={() => setselectedView(chimeAttendeeId)}
+         className={`${getBoxStyle()} cursor-pointer`}
+      >
          {videoEnabled ? (
             <>
                {tileId ? (
-                  <RemoteVideo
-                     style={{
-                        borderRadius: '8px',
-                        border: '1px solid grey',
-                        gridArea: '',
-                     }}
-                     tileId={tileId}
-                  />
+                  <div className='h-full relative'>
+                     <RemoteVideo
+                        style={{
+                           borderRadius: '8px',
+                           position: 'absolute',
+                           height: '100%',
+                           border: '1px solid grey',
+                           gridArea: '',
+                        }}
+                        tileId={tileId}
+                     />
+                     <div className='flex w-full justify-between absolute bottom-2 px-2'>
+                        <span className='bg-[#2D3748] rounded-lg text-xs text-white flex justify-center items-center px-2'>
+                           {(externalUserId.split('|')[0] as string).replace(
+                              '@',
+                              '',
+                           )}
+                        </span>
+                        <span>
+                           {muted ? (
+                              <BsFillMicMuteFill className='text-red-600' />
+                           ) : (
+                              ''
+                           )}
+                        </span>
+                     </div>
+                  </div>
                ) : (
                   <LocalVideo />
                )}
